@@ -1,8 +1,10 @@
+package application;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Aluno extends Pessoa {
-     // Atributos privados
+	 // Atributos privados
     private List<Double> notas = new ArrayList<>();;
     private double media;
     private String matricula;

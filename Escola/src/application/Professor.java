@@ -1,8 +1,10 @@
+package application;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Professor extends Funcionario {
-     // Atributos
+ // Atributos
     
     private List<String> disciplinas = new ArrayList<>();
    
@@ -29,6 +31,4 @@ public class Professor extends Funcionario {
     public List<String> getDisciplinas() {
         return disciplinas;
     }
-
-    
 }

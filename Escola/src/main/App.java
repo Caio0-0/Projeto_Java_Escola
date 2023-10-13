@@ -1,8 +1,17 @@
+package main;
+
 import java.util.List;
+import application.Pessoa;
+import application.Funcionario;
+import application.Aluno;
+import application.Gerente;
+import application.Professor;
+
 
 public class App {
-    public static void main(String[] args) throws Exception {
-        // // Criando uma instância de Pessoa
+
+	public static void main(String[] args) {
+		 // // Criando uma instância de Pessoa
         Pessoa pessoa = new Pessoa(
             "João", 
             25, 
@@ -130,6 +139,6 @@ public class App {
         System.out.println("Carga horária atual do professor: " + cargaHorariaAtual + " horas");
 
 
-       
-    }
+	}
+
 }
