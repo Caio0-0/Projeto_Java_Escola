@@ -1,113 +1,198 @@
 package Layout;
-import application.Aluno; 
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+import application.*;
 
-public class AlunoGUI {
-    private JFrame frame;
-    private JTextField notaField;
-   
-    private JButton calcularMediaButton;
-    private JTextField disciplinaField;
+public class AlunoGUI extends JFrame {
+    private Aluno aluno;
+    private List<Disciplina> disciplinasDisponiveis;
+    private List<Disciplina> disciplinasMatriculadas;
+
+    private JComboBox<String> disciplinasDisponiveisComboBox;
+    private JComboBox<String> disciplinasMatriculadasComboBox;
     private JButton adicionarDisciplinaButton;
     private JButton removerDisciplinaButton;
-    private JList<String> disciplinaList;
+    private JButton informacoesDisciplinaButton;
+    private JButton verNotasButton;
     private JButton fazerAvaliacaoButton;
-    private JTextArea outputArea;
-
-    private Aluno aluno;
-    private DefaultListModel<String> disciplinaListModel;
 
     public AlunoGUI(Aluno aluno) {
         this.aluno = aluno;
-        disciplinaListModel = new DefaultListModel<>();
+        disciplinasDisponiveis = new ArrayList<>();
+        disciplinasMatriculadas = new ArrayList<>();
 
-        frame = new JFrame("Aluno GUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 600);
-        frame.setLayout(null);
+        setTitle("Sistema de Aluno");
+        setSize(500, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new FlowLayout());
 
-        notaField = new JTextField();
- 
+        // Configura o JComboBox com as disciplinas disponíveis
+        disciplinasDisponiveisComboBox = new JComboBox<>();
+        for (Disciplina disciplina : getDisciplinasDisponiveis()) {
+            disciplinasDisponiveisComboBox.addItem(disciplina.getNomeDisciplina());
+        }
+        add(disciplinasDisponiveisComboBox);
 
-  
-        
-        disciplinaField = new JTextField();
-        disciplinaField.setBounds(20, 10, 100, 25);
+        // Configura o JComboBox com as disciplinas matriculadas (inicialmente vazio)
+        disciplinasMatriculadasComboBox = new JComboBox<>();
+        add(disciplinasMatriculadasComboBox);
 
+        // Botão para adicionar disciplina
         adicionarDisciplinaButton = new JButton("Adicionar Disciplina");
-        adicionarDisciplinaButton.setBounds(120, 10, 150, 25);
+        add(adicionarDisciplinaButton);
         adicionarDisciplinaButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String disciplina = disciplinaField.getText();
-                aluno.setDisciplina(disciplina);
-                disciplinaListModel.addElement(disciplina);
-                disciplinaField.setText("");
-            }
-        });
-
-        removerDisciplinaButton = new JButton("Remover Disciplina");
-        removerDisciplinaButton.setBounds(20, 50, 260, 25);
-        removerDisciplinaButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int selectedIndex = disciplinaList.getSelectedIndex();
-                if (selectedIndex != -1) {
-                    String disciplina = disciplinaListModel.getElementAt(selectedIndex);
-                    aluno.removeDisciplina(disciplina);
-                    disciplinaListModel.remove(selectedIndex);
+                String selectedDisciplina = (String) disciplinasDisponiveisComboBox.getSelectedItem();
+                if (selectedDisciplina != null) {
+                    Disciplina disciplina = findDisciplinaByName(selectedDisciplina, getDisciplinasDisponiveis());
+                    if (disciplina != null && !disciplinasMatriculadas.contains(disciplina)) {
+                        // Verificar se a disciplina é Matemática ou Português
+                        if (disciplina.getNomeDisciplina().equals("Matemática") || disciplina.getNomeDisciplina().equals("Português")) {
+                            // Verificar se já há uma disciplina dessas matriculadas
+                            boolean hasMathOrPortuguese = false;
+                            for (Disciplina matriculada : disciplinasMatriculadas) {
+                                if (matriculada.getNomeDisciplina().equals("Matemática") || matriculada.getNomeDisciplina().equals("Português")) {
+                                    hasMathOrPortuguese = true;
+                                    break;
+                                }
+                            }
+                            if (hasMathOrPortuguese) {
+                                JOptionPane.showMessageDialog(null, "Você já adicionou uma disciplina de Matemática ou Português.");
+                            } else {
+                                disciplinasMatriculadas.add(disciplina);
+                                disciplinasDisponiveis.remove(disciplina);
+                                updateComboBoxes();
+                            }
+                        } else {
+                            disciplinasMatriculadas.add(disciplina);
+                            disciplinasDisponiveis.remove(disciplina);
+                            updateComboBoxes();
+                        }
+                    }
                 }
             }
         });
 
-        disciplinaList = new JList<>(disciplinaListModel);
-        JScrollPane scrollPane = new JScrollPane(disciplinaList);
-        scrollPane.setBounds(20, 75, 260, 100);
+        // Botão para remover disciplina
+        removerDisciplinaButton = new JButton("Remover Disciplina");
+        add(removerDisciplinaButton);
+        removerDisciplinaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedDisciplina = (String) disciplinasMatriculadasComboBox.getSelectedItem();
+                if (selectedDisciplina != null) {
+                    Disciplina disciplina = findDisciplinaByName(selectedDisciplina, getDisciplinasMatriculadas());
+                    if (disciplina != null) {
+                        disciplinasDisponiveis.add(disciplina);
+                        disciplinasMatriculadas.remove(disciplina);
+                        updateComboBoxes();
+                    }
+                }
+            }
+        });
 
+        // Botão para exibir informações da disciplina
+        informacoesDisciplinaButton = new JButton("Informações da Disciplina");
+        add(informacoesDisciplinaButton);
+        informacoesDisciplinaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedDisciplina = (String) disciplinasMatriculadasComboBox.getSelectedItem();
+                if (selectedDisciplina != null) {
+                    Disciplina disciplina = findDisciplinaByName(selectedDisciplina, getDisciplinasMatriculadas());
+                    if (disciplina != null) {
+                        JOptionPane.showMessageDialog(null, "Informações da Disciplina:\n" +
+                                "Nome: " + disciplina.getNomeDisciplina() + "\n" +
+                                "Carga Horária: " + disciplina.getCargaHorario() + " horas\n" +
+                                "Professor: " + disciplina.getNomeProfessor());
+                    }
+                }
+            }
+        });
+
+        // Botão para ver notas da disciplina
+        verNotasButton = new JButton("Ver Notas da Disciplina");
+        add(verNotasButton);
+        verNotasButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedDisciplina = (String) disciplinasMatriculadasComboBox.getSelectedItem();
+                if (selectedDisciplina != null) {
+                    Disciplina disciplina = findDisciplinaByName(selectedDisciplina, getDisciplinasMatriculadas());
+                    if (disciplina != null) {
+                        aluno.verNotasDiciplina(disciplina);
+                    }
+                }
+            }
+        });
+
+        // Botão para realizar avaliação
         fazerAvaliacaoButton = new JButton("Fazer Avaliação");
-        fazerAvaliacaoButton.setBounds(20, 210, 260, 25);
+        add(fazerAvaliacaoButton);
         fazerAvaliacaoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Random random = new Random();
-                double nota = random.nextDouble() * 10;
-                aluno.realizarAv(nota);
-                outputArea.append("Avaliação: " + nota + "\n");
+                String selectedDisciplina = (String) disciplinasMatriculadasComboBox.getSelectedItem();
+                if (selectedDisciplina != null) {
+                    Disciplina disciplina = findDisciplinaByName(selectedDisciplina, getDisciplinasMatriculadas());
+                    if (disciplina != null) {
+                        double nota = aluno.realizarAvaliacao(disciplina);
+                        JOptionPane.showMessageDialog(null, "Avaliação realizada. Nota: " + nota);
+                    }
+                }
             }
         });
 
-        
-        
-        calcularMediaButton = new JButton("Calcular Média");
-        calcularMediaButton.setBounds(20, 240, 260, 25);
-        calcularMediaButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                double media = aluno.calcularMedia();
-                outputArea.append("Média: " + media + "\n");
+        setVisible(true);
+    }
+
+    private List<Disciplina> getDisciplinasDisponiveis() {
+        // Aqui você deve fornecer uma lista de todas as disciplinas disponíveis.
+        // Por exemplo:
+        Professor professor = new Professor("Doido do grau", 20, "Rua A", "123456789", "01/01/2000", "M123", "senha123", 12313, 10, "42342", 12);
+        Disciplina disciplina1 = new Disciplina("Matemática", professor, 30);
+        Disciplina disciplina2 = new Disciplina("Portugues", professor, 30);
+        List<Disciplina> disciplinas = new ArrayList<>();
+        disciplinas.add(disciplina1);
+        disciplinas.add(disciplina2);
+        return disciplinas;
+    }
+
+    private void updateComboBoxes() {
+        disciplinasDisponiveisComboBox.removeAllItems();
+        disciplinasMatriculadasComboBox.removeAllItems();
+
+        for (Disciplina disciplina : getDisciplinasDisponiveis()) {
+            disciplinasDisponiveisComboBox.addItem(disciplina.getNomeDisciplina());
+        }
+
+        for (Disciplina disciplina : getDisciplinasMatriculadas()) {
+            disciplinasMatriculadasComboBox.addItem(disciplina.getNomeDisciplina());
+        }
+    }
+
+    private Disciplina findDisciplinaByName(String name, List<Disciplina> disciplinas) {
+        for (Disciplina disciplina : disciplinas) {
+            if (disciplina.getNomeDisciplina().equals(name)) {
+                return disciplina;
             }
-        });
-        
-        outputArea = new JTextArea();
-        outputArea.setBounds(20, 280, 260, 70);
-        outputArea.setEditable(false);
+        }
+        return null;
+    }
 
-        frame.add(notaField);
-
-      
-        frame.add(calcularMediaButton);
-        frame.add(disciplinaField);
-        frame.add(adicionarDisciplinaButton);
-        frame.add(removerDisciplinaButton);
-        frame.add(scrollPane);
-        frame.add(fazerAvaliacaoButton);
-        frame.add(outputArea);
-
-        frame.setVisible(true);
+    private List<Disciplina> getDisciplinasMatriculadas() {
+        // Retorne a lista de disciplinas matriculadas pelo aluno.
+        return disciplinasMatriculadas;
     }
 
     public static void main(String[] args) {
-        Aluno aluno = new Aluno("João", 20, "Silva", "Rua A", "123456789", "01/01/2000", "2023001", 2, "A");
-        new AlunoGUI(aluno);
+        Aluno aluno = new Aluno("jose", 20, "Endereço do Aluno", "1234567890", "01/01/2000", "MAT123", "senha");
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new AlunoGUI(aluno);
+            }
+        });
     }
 }

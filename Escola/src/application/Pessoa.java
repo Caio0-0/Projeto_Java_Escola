@@ -4,15 +4,18 @@ public class Pessoa {
 	// Atributos privados
     private String nome;
     private int idade;
-    private String sobrenome;
+   
     private String endereco;
     private String cpf;
     private String dataNascimento;
+    private String senha;
+    private String matricula;
 
-    public Pessoa(String nome, int idade, String sobrenome, String endereco, String cpf, String dataNascimento) {
+    public Pessoa(String nome, int idade, String endereco, String cpf, String dataNascimento,String matricula,String senha) {
         this.nome = nome;
+        this.senha = senha;
+        this.matricula = matricula;
         this.idade = idade;
-        this.sobrenome = sobrenome;
         this.endereco = endereco;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
@@ -27,11 +30,16 @@ public class Pessoa {
         this.idade = idade;
     }
 
-    public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
-    }
 
-    public void setEndereco(String endereco) {
+    public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+
+	public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
 
@@ -52,11 +60,15 @@ public class Pessoa {
         return idade;
     }
 
-    public String getSobrenome() {
-        return sobrenome;
-    }
+    public String getSenha() {
+		return senha;
+	}
 
-    public String getEndereco() {
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public String getEndereco() {
         return endereco;
     }
 

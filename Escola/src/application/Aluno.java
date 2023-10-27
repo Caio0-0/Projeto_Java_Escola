@@ -2,73 +2,81 @@ package application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 
 public class Aluno extends Pessoa {
-	 // Atributos privados
-    private List<Double> notas = new ArrayList<>();;
-    private double media;
-    private String matricula;
-    private List<String> disciplinas = new ArrayList<>();
-    private int periodo;
-    private String turma;
+    private List<String> minhasDisciplinas;
+    private List<Disciplina> disciplinasAdicionadas;
 
-    // Construtor
-    public Aluno(String nome, int idade, String sobrenome, String endereco, String cpf, String dataNascimento, String matricula, int periodo, String turma) {
-        super(nome,idade,sobrenome,endereco,cpf,dataNascimento);
-        this.matricula = matricula;
-        this.periodo = periodo;
-        this.turma = turma;
+
+    public Aluno(String nome, int idade, String endereco, String cpf, String dataNascimento, String matricula, String senha) {
+        super(nome, idade, endereco, cpf, dataNascimento, matricula, senha);
+        this.minhasDisciplinas = new ArrayList<>();
+        this.disciplinasAdicionadas = new ArrayList<>();
+ 
     }
 
-    // Método para realizar uma avaliação (prova, teste, etc.)
-    public void realizarAv(double nota) {
-        notas.add(nota);
-    }
-
-    // Método para calcular a média do aluno
-    public double calcularMedia() {
-        int tamanho = notas.size();
-        double somaNota =0;
-        for(Double notas:notas){
-            somaNota += notas; 
+    public double realizarAvaliacao(Disciplina disciplina) {
+        if (minhasDisciplinas.contains(disciplina.getNomeDisciplina())) {
+            Random random = new Random();
+            double nota = random.nextDouble() * 10; // Gera um número aleatório entre 0 e 10
+            disciplina.getNotas().add(nota); // Adiciona a nota à lista de notas da disciplina
+            return nota;
+        } else {
+            System.out.println("O aluno não está matriculado na disciplina " + disciplina.getNomeDisciplina());
+            return 0.0; // Retornar 0 em caso de erro.
         }
-         media = (somaNota/tamanho);
-        return media;
     }
 
-    // Método para definir as disciplinas do aluno
-    public void setDisciplina(String disciplina) {
-        disciplinas.add(disciplina);
+    public void infoDisciplinas(Disciplina disciplina) {
+        System.out.println("Diciplina: " + disciplina.getNomeDisciplina());
+        System.out.println("Carga horaria: " + disciplina.getCargaHorario());
+        System.out.println("Professor da disciplina: " + disciplina.getNomeProfessor());
+    }
+    public void addDisciplina(Disciplina disciplina) {
+        if (!disciplinasAdicionadas.contains(disciplina)) {
+            minhasDisciplinas.add(disciplina.getNomeDisciplina());
+            disciplinasAdicionadas.add(disciplina);
+        }else {
+            System.out.println(getNome() + " já está matriculado na disciplina " + disciplina.getNomeDisciplina());
+        }
     }
 
-    // Método para remover uma disciplina do aluno
-    public void removeDisciplina(String disciplina) {
-        disciplinas.remove(disciplina);
+    public void calcularMedia(Disciplina disciplina) {
+        String media = disciplina.calcularMedia(disciplina);
+        System.out.println("Média em " + disciplina.getNomeDisciplina() + ": " + media);
     }
 
-    // Getters para acessar os atributos privados
-    public List<Double> getNotas() {
-        return notas;
+    public void removerDisciplina(Disciplina disciplina) {
+        if (minhasDisciplinas.contains(disciplina.getNomeDisciplina())) {
+            minhasDisciplinas.remove(disciplina.getNomeDisciplina());
+            disciplina.setMaxAluno(-1);
+            System.out.println(getNome() + " foi removido da disciplina " + disciplina.getNomeDisciplina());
+        } else {
+            System.out.println(getNome() + " não está matriculado na disciplina " + disciplina.getNomeDisciplina());
+        }
     }
 
-    public double getMedia() {
-        calcularMedia();
-        return media;
-    }
-
-    public String getMatricula() {
-        return matricula;
+    public void verNotasDiciplina(Disciplina disciplina) {
+        System.out.println("Notas na disciplina " + disciplina.getNomeDisciplina() + ":");
+        List<Double> notas = disciplina.getNotas();
+        for (int i = 0; i < notas.size(); i++) {
+            System.out.println("Nota " + (i + 1) + ": " + String.format("%.2f", notas.get(i)));
+        }
     }
 
     public List<String> getDisciplinas() {
-        return disciplinas;
+        return minhasDisciplinas;
     }
 
-    public int getPeriodo() {
-        return periodo;
-    }
+	public List<Disciplina> getDisciplinasAdicionadas() {
+		return disciplinasAdicionadas;
+	}
 
-    public String getTurma() {
-        return turma;
-    }
+	public void setDisciplinasAdicionadas(List<Disciplina> disciplinasAdicionadas) {
+		this.disciplinasAdicionadas = disciplinasAdicionadas;
+	}
+
+ 
 }
