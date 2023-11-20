@@ -79,4 +79,8 @@ public class Pessoa {
     public String getDataNascimento() {
         return dataNascimento;
     }
+    @Override
+    public String toString() {
+        return nome;
+    }
 }

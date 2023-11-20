@@ -5,7 +5,7 @@ public class Funcionario extends Pessoa {
     private double salario;
     private int cargaHoraria;
     private String setor;
-    private int id;
+
     private boolean estado;
 
     // Construtor
@@ -17,12 +17,9 @@ public class Funcionario extends Pessoa {
     }
 
     public Funcionario(String nome, int idade, String endereco, String cpf, String dataNascimento, String matricula,
-			String senha, double salario, int cargaHoraria, String setor, int id) {
+			String senha) {
 		super(nome, idade, endereco, cpf, dataNascimento, matricula, senha);
-		this.salario = salario;
-		this.cargaHoraria = cargaHoraria;
-		this.setor = setor;
-		this.id = id;
+	
 		this.estado = false;
 	}
     
@@ -35,9 +32,7 @@ public class Funcionario extends Pessoa {
 		this.estado = estado;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 
 	public void setCargaHoraria(int cargaHoraria) {
         this.cargaHoraria = cargaHoraria;
@@ -60,7 +55,6 @@ public class Funcionario extends Pessoa {
         return setor;
     }
 
-    public int getId() {
-        return id;
-    }
+
+   
 }
